@@ -1,8 +1,5 @@
+streamlit
 yfinance
 backtrader
-pygad
-math
 matplotlib
 pandas
-os
-numpy
