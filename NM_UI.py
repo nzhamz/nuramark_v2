@@ -9,9 +9,6 @@ import pandas as pd
 # GitHub link for CSV file
 csv_url = "https://raw.githubusercontent.com/nzhamz/nuramark_v2/main/Trade.csv"
 
-# Streamlit app title and instructions
-
-
 # Streamlit app title
 st.title("nzham 📈 Trading Strategy Performance")
 
@@ -21,27 +18,25 @@ def load_data(url):
     return pd.read_csv(url)
 
 # Load the data
-data = load_data(csv_url)
+data1 = load_data(csv_url)
 
 # Display the data
 st.write("### Optimized Trading Data")
-st.dataframe(data)
-
-
+st.dataframe(data1)
 
 st.write("Customize the parameters and view the trading strategy outcome:")
 
 # Collect user input
 with st.form("input_form"):
-    src = st.text_input("Source (Ticker Symbol, Crypto: XXX-USD, TASI: XXX.SR )", "NEAR-USD")
+    src = st.text_input("Source (Ticker Symbol, Crypto: XXX-USD, TASI: XXX.SR )", "4250.SR")
     interval = st.selectbox("Interval", options=["1h", "1d", "1w"], index=1)
     start_date = st.date_input("Start Date", value=datetime(2024, 6, 1).date())
     end_date = st.date_input("End Date", value=datetime.now().date())
     
-    buy_ma_period = st.number_input("Buy Moving Average Period", min_value=1, max_value=100, value=10)
-    sell_ma_period = st.number_input("Sell Moving Average Period", min_value=1, max_value=100, value=10)
-    buy_slope = st.number_input("Buy Slope", min_value=-10.0, max_value=10.0, value=2.0)
-    sell_slope = st.number_input("Sell Slope", min_value=-10.0, max_value=10.0, value=-2.0)
+    buy_ma_period = st.number_input("Buy Moving Average Period", min_value=1, max_value=200, value=3)
+    sell_ma_period = st.number_input("Sell Moving Average Period", min_value=1, max_value=100, value=5)
+    buy_slope = st.number_input("Buy Slope", min_value=-15.0, max_value=15.0, value=2.0)
+    sell_slope = st.number_input("Sell Slope", min_value=-15.0, max_value=15.0, value=-2.0)
     wait_period = st.number_input("Wait Period", min_value=1, max_value=10, value=3)
     hold_period = st.number_input("Hold Period", min_value=1, max_value=30, value=4)
     profit_target = st.number_input("Profit Target Percentage", min_value=0.1, max_value=100.0, value=5.0)
@@ -52,7 +47,18 @@ with st.form("input_form"):
 # Only execute the strategy if the form is submitted
 if submitted:
     data = yf.download(src, start=start_date, end=end_date, interval=interval)
-    
+    data.columns = [col.lower() for col in data.columns]  # Convert column names to lowercase
+    #st.write("Columns in data:", data.columns)  # Check available columns
+
+    # Verify if 'close' column exists; if not, use 'adj close' or another relevant column
+    if 'close' in data.columns:
+        close_column = 'close'
+    elif 'adj close' in data.columns:
+        close_column = 'adj close'
+    else:
+        st.error("No 'Close' or 'Adj Close' column found in data.")
+        st.stop()
+
     class PandasData(bt.feeds.PandasData):
         lines = ('low',)
         params = (('low', -1),)
@@ -138,8 +144,8 @@ if submitted:
             profits = [t[3] for t in self.trades if t[1] == "Sell"]
         
             fig, ax = plt.subplots(figsize=(16, 8))
-            ax.plot(data.index, data['Close'], label='Close Price', color='blue')
-            ax.scatter(data.index, data['Close'], color='black', s=30, alpha=0.7)
+            ax.plot(data.index, data[close_column], label='Close Price', color='blue')
+            ax.scatter(data.index, data[close_column], color='black', s=30, alpha=0.7)
             ax.scatter(buy_dates, buy_prices, marker='o', color='green', label='Buy Signal', s=100)
             ax.scatter(sell_dates, sell_prices, marker='X', color='red', label='Sell Signal', s=100)
         
@@ -184,6 +190,3 @@ if submitted:
             st.markdown("<h2 style='color: red;'>📉 Sell Recommendation</h2>", unsafe_allow_html=True)
     else:
         st.write("No trades executed.")
-        
-
-
