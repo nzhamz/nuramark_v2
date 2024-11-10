@@ -2,3 +2,4 @@ yfinance==0.2.40
 pandas
 streamlit==1.40.0
 backtrader
+matplotlib
