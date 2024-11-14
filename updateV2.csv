@@ -1,1 +1,2 @@
-Trade ID,Timestamp,Order Type,Entry Price,Exit Price,Quantity,Profit/Loss %,Holding Period (Candles),Status,Buy EMA Period,Sell EMA Period,Buy Slope,Sell Slope,Wait Period,Hold Period,Profit Target (%),Stop Loss (%),Cumulative Profit/Loss,Total Trades,Winning Trades
+Trade ID,Timestamp,Order Type,Entry Price,Exit Price,Quantity,Profit/Loss %,Holding Period (Candles),Status,Buy EMA Period,Sell EMA Period,Buy Slope,Sell Slope,Wait Period,Hold Period,Profit Target (%),Stop Loss (%),Cumulative Profit/Loss,Total Trades,Winning Trades,src,current_price,prev_candle_price,Counter
+,,,,,,,,,,,,,,,,,,,,NEAR-USD,5.437312126159668,5.409444808959961,0.0
